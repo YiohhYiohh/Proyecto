@@ -1,0 +1,285 @@
+{% extends 'solicitudesF/base.html' %}
+{% load static %}
+
+{% block title %}Mis Solicitudes - Municipalidad de Fresia{% endblock %}
+
+{% block extra_css %}
+<style>
+    :root {
+        --primary: #1a4f8b;
+        --primary-dark: #0d3c6d;
+        --accent: #28a745;
+        --light-bg: #f8f9fa;
+        --text-primary: #212529;
+        --text-secondary: #6c757d;
+        --border-color: #dee2e6;
+        --card-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+        --transition: all 0.3s ease;
+    }
+    
+    .page-container {
+        background: linear-gradient(135deg, #f5f7fa 0%, #e4e8f0 100%);
+        min-height: 100vh;
+        padding: 2rem 0;
+    }
+    
+    .page-title {
+        color: var(--primary);
+        font-weight: 700;
+        margin-bottom: 2rem;
+        text-align: center;
+        position: relative;
+        padding-bottom: 0.5rem;
+    }
+    
+    .page-title::after {
+        content: '';
+        position: absolute;
+        bottom: 0;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 80px;
+        height: 4px;
+        background: var(--accent);
+        border-radius: 2px;
+    }
+    
+    .solicitudes-card {
+        background: white;
+        border-radius: 12px;
+        box-shadow: var(--card-shadow);
+        overflow: hidden;
+        transition: var(--transition);
+    }
+    
+    .solicitudes-card:hover {
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+        transform: translateY(-3px);
+    }
+    
+    .card-header-custom {
+        background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+        color: white;
+        padding: 1.2rem 1.5rem;
+        border-bottom: none;
+    }
+    
+    .card-header-custom h2 {
+        margin: 0;
+        font-size: 1.5rem;
+        font-weight: 600;
+    }
+    
+    .table-container {
+        overflow: hidden;
+        border-radius: 0 0 12px 12px;
+    }
+    
+    .table-custom {
+        margin: 0;
+        border-collapse: separate;
+        border-spacing: 0;
+        width: 100%;
+    }
+    
+    .table-custom thead th {
+        background-color: var(--light-bg);
+        color: var(--primary);
+        font-weight: 600;
+        padding: 1rem;
+        border-bottom: 2px solid var(--border-color);
+        text-align: left;
+    }
+    
+    .table-custom tbody td {
+        padding: 1rem;
+        vertical-align: middle;
+        border-bottom: 1px solid var(--border-color);
+    }
+    
+    .table-custom tbody tr:last-child td {
+        border-bottom: none;
+    }
+    
+    .table-custom tbody tr {
+        transition: var(--transition);
+    }
+    
+    .table-custom tbody tr:hover {
+        background-color: rgba(26, 79, 139, 0.03);
+    }
+    
+    .estado-badge {
+        padding: 0.35rem 0.75rem;
+        border-radius: 50px;
+        font-size: 0.85rem;
+        font-weight: 500;
+        display: inline-block;
+    }
+    
+    .estado-pendiente {
+        background-color: #fff3cd;
+        color: #856404;
+    }
+    
+    .estado-procesando {
+        background-color: #cce5ff;
+        color: #004085;
+    }
+    
+    .estado-completado {
+        background-color: #d4edda;
+        color: #155724;
+    }
+    
+    .estado-rechazado {
+        background-color: #f8d7da;
+        color: #721c24;
+    }
+    
+    .id-solicitud {
+        font-weight: 600;
+        color: var(--primary);
+    }
+    
+    .fecha-solicitud {
+        color: var(--text-secondary);
+        font-size: 0.9rem;
+    }
+    
+    .descripcion-solicitud {
+        color: var(--text-primary);
+        line-height: 1.5;
+    }
+    
+    .empty-state {
+        padding: 2.5rem 1rem;
+        text-align: center;
+        color: var(--text-secondary);
+    }
+    
+    .empty-state i {
+        font-size: 3rem;
+        margin-bottom: 1rem;
+        color: #ced4da;
+    }
+    
+    .empty-state p {
+        margin-bottom: 1.5rem;
+        font-size: 1.1rem;
+    }
+    
+    .btn-primary-custom {
+        background: var(--primary);
+        border: none;
+        padding: 0.6rem 1.5rem;
+        border-radius: 6px;
+        font-weight: 500;
+        transition: var(--transition);
+    }
+    
+    .btn-primary-custom:hover {
+        background: var(--primary-dark);
+        transform: translateY(-2px);
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
+    
+    @media (max-width: 768px) {
+        .page-container {
+            padding: 1rem;
+        }
+        
+        .table-custom thead th,
+        .table-custom tbody td {
+            padding: 0.75rem 0.5rem;
+        }
+        
+        .table-responsive {
+            border-radius: 0 0 8px 8px;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="page-container">
+    <div class="container">
+        <h1 class="page-title">Mis Solicitudes</h1>
+        
+        <div class="solicitudes-card">
+            <div class="card-header-custom">
+                <h2><i class="bi bi-list-check me-2"></i>Historial de Solicitudes</h2>
+            </div>
+            
+            <div class="table-container">
+                <div class="table-responsive">
+                    <table class="table table-custom">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Fecha de Creación</th>
+                                <th>Estado</th>
+                                <th>Descripción</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for solicitud in solicitudes %}
+                            <tr>
+                                <td><span class="id-solicitud">#{{ solicitud.id }}</span></td>
+                                <td>
+                                    <span class="fecha-solicitud">
+                                        <i class="bi bi-calendar-event me-1"></i>
+                                        {{ solicitud.fecha_creacion }}
+                                    </span>
+                                </td>
+                                <td>
+                                    {% with estado=solicitud.estado|lower %}
+                                        {% if "pendiente" in estado %}
+                                            <span class="estado-badge estado-pendiente">
+                                                <i class="bi bi-clock me-1"></i>{{ solicitud.estado }}
+                                            </span>
+                                        {% elif "proces" in estado %}
+                                            <span class="estado-badge estado-procesando">
+                                                <i class="bi bi-gear me-1"></i>{{ solicitud.estado }}
+                                            </span>
+                                        {% elif "complet" in estado or "finaliz" in estado or "aprob" in estado %}
+                                            <span class="estado-badge estado-completado">
+                                                <i class="bi bi-check-circle me-1"></i>{{ solicitud.estado }}
+                                            </span>
+                                        {% elif "rechaz" in estado or "deneg" in estado %}
+                                            <span class="estado-badge estado-rechazado">
+                                                <i class="bi bi-x-circle me-1"></i>{{ solicitud.estado }}
+                                            </span>
+                                        {% else %}
+                                            <span class="estado-badge">{{ solicitud.estado }}</span>
+                                        {% endif %}
+                                    {% endwith %}
+                                </td>
+                                <td>
+                                    <p class="descripcion-solicitud mb-0">
+                                        <i class="bi bi-text-paragraph me-1 text-muted"></i>
+                                        {{ solicitud.descripcion|truncatechars:100 }}
+                                    </p>
+                                </td>
+                            </tr>
+                            {% empty %}
+                            <tr>
+                                <td colspan="4">
+                                    <div class="empty-state">
+                                        <i class="bi bi-inbox"></i>
+                                        <p>Aún no tienes solicitudes registradas.</p>
+                                        <a href="{% url 'solicitudesF:crear_solicitud' %}" class="btn btn-primary-custom">
+                                            <i class="bi bi-plus-circle me-1"></i>Crear primera solicitud
+                                        </a>
+                                    </div>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

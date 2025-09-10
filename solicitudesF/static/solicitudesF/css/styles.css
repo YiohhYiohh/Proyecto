@@ -1,0 +1,56 @@
+/* General */
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f5f6fa;
+    margin: 0;
+    padding: 0;
+}
+
+/* Títulos */
+h1, h5 {
+    font-weight: bold;
+}
+
+/* Botones */
+.btn-success {
+    background-color: #28a745;
+    border: none;
+}
+.btn-success:hover {
+    background-color: #218838;
+}
+
+/* Formularios */
+.form-label {
+    font-weight: 600;
+}
+textarea {
+    resize: none;
+}
+
+/* Modal */
+.modal-content {
+    border-radius: 10px;
+}
+
+/* Botón con gradiente y animación */
+.btn-gradient {
+    background: linear-gradient(135deg, #28a745, #218838);
+    color: #fff;
+    border: none;
+    border-radius: 50px;
+    padding: 0.5rem 1.2rem;
+    font-weight: 500;
+    transition: all 0.3s ease;
+}
+
+.btn-gradient:hover {
+    background: linear-gradient(135deg, #218838, #28a745);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 12px rgba(0,0,0,0.2);
+}
+
+.btn-gradient:active {
+    transform: translateY(1px);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+}
