@@ -1,0 +1,65 @@
+{% load static %}
+
+<!-- Contenido del modal (se inyecta dinámicamente) -->
+<div class="modal-header">
+    <h5 class="modal-title">Realizar Solicitud</h5>
+    <!-- Botón de cierre funcional -->
+    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+</div>
+
+<div class="modal-body">
+    <form method="post" enctype="multipart/form-data" id="solicitudForm">
+        {% csrf_token %}
+        {% for field in form %}
+            <div class="mb-3">
+                <label for="{{ field.id_for_label }}" class="form-label">{{ field.label }}</label>
+                {{ field }}
+                {% if field.help_text %}
+                    <div class="form-text">{{ field.help_text }}</div>
+                {% endif %}
+                {% for error in field.errors %}
+                    <div class="text-danger small">{{ error }}</div>
+                {% endfor %}
+            </div>
+        {% endfor %}
+        <div class="d-grid">
+            <button type="submit" class="btn btn-success">Enviar Solicitud</button>
+        </div>
+    </form>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const form = document.getElementById('solicitudForm');
+    const modalElement = document.getElementById('modalSolicitud');
+    const bootstrapModal = bootstrap.Modal.getOrCreateInstance(modalElement);
+
+    form.addEventListener('submit', function(e) {
+        e.preventDefault(); // Evita recargar la página
+
+        const formData = new FormData(form);
+        const url = form.getAttribute('action') || window.location.href;
+
+        fetch(url, {
+            method: 'POST',
+            body: formData,
+            headers: {
+                'X-Requested-With': 'XMLHttpRequest'
+            }
+        })
+        .then(response => response.text())
+        .then(html => {
+            // Reemplaza el contenido del modal con la respuesta
+            document.getElementById("modal-content").innerHTML = html;
+
+            // Si la respuesta contiene la confirmación de éxito, cerramos el modal
+            if (html.includes("Solicitud Enviada con Éxito")) {
+                bootstrapModal.hide();
+                // Opcional: redirigir a la página de éxito
+                window.location.href = "{% url 'solicitudesF:solicitud_exitosa' %}";
+            }
+        })
+        .catch(error => console.error('Error enviando la solicitud:', error));
+    });
+});
+</script>

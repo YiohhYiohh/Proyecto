@@ -1,0 +1,23 @@
+{% extends 'solicitudesF/base.html' %}
+
+{% block title %}Solicitud Enviada con Éxito{% endblock %}
+
+{% block content %}
+<div class="card text-center">
+    <div class="card-header bg-success text-white">
+        <h1 class="card-title mb-0">¡Solicitud Enviada con Éxito!</h1>
+    </div>
+    <div class="card-body">
+        <p class="card-text lead">Tu solicitud ha sido recibida y será procesada a la brevedad.</p>
+        <p class="card-text">Pronto recibirás un correo de confirmación con los detalles de tu solicitud.</p>
+        {# En el futuro, podríamos mostrar un número de ticket aquí: #}
+        {# <p class="card-text fs-4">Tu número de ticket es: <strong>{{ numero_de_ticket }}</strong></p> #}
+
+        <hr>
+        <a href="{% url 'solicitudesF:crear_solicitud' %}" class="btn btn-primary mt-3">Enviar Otra Solicitud</a>
+        </div>
+    <div class="card-footer text-muted">
+        Gracias por utilizar nuestro Sistema de Solicitudes Ciudadanas.
+    </div>
+</div>
+{% endblock %}

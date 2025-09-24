@@ -1,0 +1,5 @@
+{
+  "dependencies": {
+    "@gobdigital-cl/gob.cl": "^3.0.10"
+  }
+}

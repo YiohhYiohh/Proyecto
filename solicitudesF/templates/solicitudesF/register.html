@@ -1,0 +1,44 @@
+{% extends 'solicitudesF/base.html' %}
+{% load crispy_forms_tags %}
+
+{% block title %}Registrarse{% endblock %}
+
+{% block content %}
+<div class="container my-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card shadow-sm p-4">
+                <h2 class="card-title text-center mb-4">Crea tu Cuenta Ciudadana</h2>
+                <p class="text-center text-muted">Ingresa tus datos para registrarte en el sistema de solicitudes.</p>
+
+                {# Mensajes de Django (éxito/error) #}
+                {% if messages %}
+                    <div class="messages mb-3">
+                        {% for message in messages %}
+                            <div class="alert alert-{{ message.tags }}">
+                                {{ message }}
+                            </div>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+
+                <form method="post">
+                    {% csrf_token %}
+                    {{ form|crispy }} {# Renderiza el formulario con crispy-forms #}
+                    
+                    {# Contenedor para centrar el botón en Bootstrap 4 #}
+                    <div class="text-center mt-4">
+                        <button type="submit" class="btn btn-primary btn-lg">
+                            <i class="bi bi-person-plus me-2"></i> Registrarse
+                        </button>
+                    </div>
+                </form>
+                <hr class="my-4">
+                <p class="text-center">
+                    ¿Ya tienes una cuenta? <a href="{% url 'login' %}">Inicia sesión aquí</a>
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,302 @@
+{% extends 'solicitudesF/base.html' %}
+{% load static %}
+
+{% block title %}Solicitudes Disponibles{% endblock %}
+
+{% block content %}
+<div class="container-fluid" style="background-color: #e6eef7; min-height: 100vh; padding-bottom: 50px;">
+    <div class="row mb-4 align-items-start">
+        <div class="col-md-8">
+            <h1 class="display-6 fw-bold">Solicitudes Ciudadanas</h1>
+            <h2 class="h4 text-muted">Municipalidad de Fresia</h2>
+            <p class="lead">
+                En el cuadro inferior de esta página encontrará el listado de servicios que el Municipio coloca a su disposición.
+                Para cada servicio se indica el Área y la Dirección al cual está asociado, para orientar mejor su ejecución.
+            </p>
+        </div>
+
+        <div class="col-md-4">
+            <div class="card shadow-sm p-3 h-100 d-flex flex-column justify-content-between">
+                <i class="fas fa-file-alt fa-2x text-info mb-3"></i>
+                <h5 class="card-title text-center">Solicitudes Realizadas</h5>
+                <p class="card-text text-center text-muted">
+                    Para revisar el estado de las solicitudes realizadas, haga clic en el siguiente botón.
+                </p>
+                <div class="d-flex justify-content-center">
+                    <a href="{% url 'solicitudesF:mis_solicitudes' %}" class="btn btn-gradient">Revisar Solicitudes</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row mb-4 text-center">
+        <div class="col-md-4 mb-3">
+            <div class="card step-card shadow-sm h-100">
+                <div class="card-body">
+                    <i class="fas fa-search fa-2x text-primary mb-3"></i>
+                    <h5 class="card-title">Paso 1</h5>
+                    <p class="card-text">Debe buscar el que más se ajuste a su necesidad.</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4 mb-3">
+            <div class="card step-card shadow-sm h-100">
+                <div class="card-body">
+                    <i class="fas fa-hand-pointer fa-2x text-success mb-3"></i>
+                    <h5 class="card-title">Paso 2</h5>
+                    <p class="card-text">Presionar el botón <strong>"Realizar Solicitud"</strong>.</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4 mb-3">
+            <div class="card step-card shadow-sm h-100">
+                <div class="card-body">
+                    <i class="fas fa-clipboard-list fa-2x text-warning mb-3"></i>
+                    <h5 class="card-title">Paso 3</h5>
+                    <p class="card-text">Completar el formulario correspondiente.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <hr class="my-4">
+
+    <div class="card shadow-sm p-4">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <h4 class="mb-0">Solicitudes disponibles por Dirección</h4>
+            <div class="input-group" style="max-width: 300px;">
+                <input type="text" class="form-control" placeholder="Buscar Solicitud" aria-label="Buscar Solicitud" id="search-input">
+                <span class="input-group-text"><i class="bi bi-search"></i></span>
+            </div>
+        </div>
+        <p class="text-muted">
+            Seleccione la solicitud que mejor se ajuste a su requerimiento y presione el botón "Realizar Solicitud".
+            Puede utilizar el buscador de la derecha, indicando algún concepto o palabra clave de la solicitud a realizar.
+        </p>
+
+        <!-- Vista en formato tabla (solo PC) -->
+        <div class="table-responsive tabla-solicitudes">
+            <table class="table table-hover align-middle" id="solicitudes-table">
+                <thead>
+                    <tr>
+                        <th scope="col">Nº</th>
+                        <th scope="col">SOLICITUD CIUDADANA</th>
+                        <th scope="col">DIRECCIÓN</th>
+                        <th scope="col">DESCRIPCIÓN</th>
+                        <th scope="col">OPCIONES</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for tipo in tipos_solicitud %}
+                    <tr>
+                        <th scope="row">{{ forloop.counter }}</th>
+                        <td>{{ tipo.nombre }}</td>
+                        <td>{{ tipo.direccion }}</td>
+                        <td>{{ tipo.descripcion_corta }}</td>
+                        <td>
+                            <button class="btn btn-gradient btn-sm shadow-sm"
+                                    data-url="{% url 'solicitudesF:crear_solicitud' %}?tipo_id={{ tipo.id }}"
+                                    onclick="abrirModal(this)">
+                                Realizar Solicitud
+                            </button>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="5" class="text-center text-muted">No hay tipos de solicitudes disponibles.</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Vista en formato cards (solo móvil) -->
+        <div class="cards-solicitudes">
+            {% for tipo in tipos_solicitud %}
+            <div class="card solicitud-card shadow-sm mb-3">
+                <div class="card-body">
+                    <h5 class="card-title">{{ tipo.nombre }}</h5>
+                    <p class="card-text"><strong>Dirección:</strong> {{ tipo.direccion }}</p>
+                    <p class="card-text">{{ tipo.descripcion_corta }}</p>
+                    <button class="btn btn-gradient btn-sm shadow-sm"
+                            data-url="{% url 'solicitudesF:crear_solicitud' %}?tipo_id={{ tipo.id }}"
+                            onclick="abrirModal(this)">
+                        Realizar Solicitud
+                    </button>
+                </div>
+            </div>
+            {% empty %}
+            <p class="text-center text-muted">No hay tipos de solicitudes disponibles.</p>
+            {% endfor %}
+        </div>
+
+        <!-- Mensaje dinámico de “no resultados” -->
+        <p id="no-results" class="text-center text-muted mt-3" style="display:none;">
+            No se encontraron resultados.
+        </p>
+    </div>
+</div>
+
+<div class="modal fade" id="modalSolicitud" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content" id="modal-content">
+    </div>
+  </div>
+</div>
+
+{% block extra_js %}
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+<style>
+/* Fondo azul tenue */
+body {
+    background-color: #e6eef7;
+}
+
+/* Botón con gradiente y animación */
+.btn-gradient {
+    background: linear-gradient(135deg, #28a745, #218838);
+    color: #fff;
+    border: none;
+    border-radius: 50px;
+    padding: 0.5rem 1.2rem;
+    font-weight: 500;
+    transition: all 0.3s ease;
+}
+
+.btn-gradient:hover {
+    background: linear-gradient(135deg, #218838, #28a745);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 12px rgba(0,0,0,0.2);
+}
+
+.btn-gradient:active {
+    transform: translateY(1px);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+}
+
+/* Estilos de las cartas de pasos */
+.step-card {
+    transition: all 0.3s ease;
+    border-radius: 15px;
+}
+
+.step-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 16px rgba(0,0,0,0.15);
+}
+
+/* Alternar tabla/cards según pantalla */
+.tabla-solicitudes {
+    display: block;
+}
+.cards-solicitudes {
+    display: none;
+}
+
+@media (max-width: 768px) {
+    .tabla-solicitudes {
+        display: none;
+    }
+    .cards-solicitudes {
+        display: block;
+    }
+    .solicitud-card {
+        border-radius: 12px;
+        transition: transform 0.2s ease;
+    }
+    .solicitud-card:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 6px 12px rgba(0,0,0,0.1);
+    }
+}
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const searchInput = document.getElementById('search-input');
+
+    const table = document.getElementById('solicitudes-table');
+    const rows = table ? table.getElementsByTagName('tr') : [];
+
+    const cards = document.querySelectorAll('.cards-solicitudes .solicitud-card');
+    const noResultsMsg = document.getElementById('no-results');
+
+    if (searchInput) {
+        searchInput.addEventListener('keyup', function() {
+            const filter = searchInput.value.toLowerCase();
+            let found = false;
+
+            // 🔎 Filtrar en la tabla
+            for (let i = 1; i < rows.length; i++) {
+                const cells = rows[i].getElementsByTagName('td');
+                let rowText = '';
+                for (let j = 0; j < cells.length - 1; j++) {
+                    rowText += cells[j].textContent || cells[j].innerText;
+                }
+                const match = rowText.toLowerCase().includes(filter);
+                rows[i].style.display = match ? '' : 'none';
+                if (match) found = true;
+            }
+
+            // 🔎 Filtrar en las cards
+            cards.forEach(card => {
+                const text = card.textContent.toLowerCase();
+                const match = text.includes(filter);
+                card.style.display = match ? '' : 'none';
+                if (match) found = true;
+            });
+
+            // Mostrar/ocultar mensaje de no resultados
+            noResultsMsg.style.display = found ? 'none' : 'block';
+        });
+    }
+});
+
+// Función para abrir modal y cargar formulario
+function abrirModal(btn){
+    const url = btn.getAttribute("data-url");
+    fetch(url)
+    .then(response => response.text())
+    .then(html => {
+        document.getElementById("modal-content").innerHTML = html;
+
+        const modalElement = document.getElementById('modalSolicitud');
+        const modalInstance = new bootstrap.Modal(modalElement);
+        modalInstance.show();
+
+        const closeButton = modalElement.querySelector('[data-bs-dismiss="modal"]');
+        if (closeButton) {
+            closeButton.addEventListener('click', () => modalInstance.hide());
+        }
+
+        const form = modalElement.querySelector('#solicitudForm');
+        if (form) {
+            form.addEventListener('submit', function(e) {
+                e.preventDefault();
+                const formData = new FormData(form);
+                const formUrl = form.getAttribute('action') || url;
+
+                fetch(formUrl, {
+                    method: 'POST',
+                    body: formData,
+                    headers: { 'X-Requested-With': 'XMLHttpRequest' }
+                })
+                .then(response => response.text())
+                .then(html => {
+                    document.getElementById("modal-content").innerHTML = html;
+
+                    if (html.includes("Solicitud Enviada con Éxito")) {
+                        modalInstance.hide();
+                        window.location.href = "{% url 'solicitudesF:solicitud_exitosa' %}";
+                    }
+                })
+                .catch(error => console.error('Error enviando la solicitud:', error));
+            });
+        }
+    })
+    .catch(error => console.error('Error cargando el formulario:', error));
+}
+</script>
+{% endblock %}
+{% endblock %}
